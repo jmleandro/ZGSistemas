@@ -3,14 +3,12 @@ import mysql.connector
 
 app = Flask(__name__)
 
-# Configurações do banco de dados
 db_username = 'root'
 db_password = 'senha1'
 db_name = 'zgsistemas'
 
-# Conectar ao banco de dados MySQL
 db = mysql.connector.connect(
-    host='127.0.0.1',
+    host='192.168.28.11',
     port=3307,
     user=db_username,
     password=db_password,
@@ -41,7 +39,6 @@ def login():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    # Página de dashboard após o login bem-sucedido
     return "Você está logado! Esta é a página de dashboard."
 
 # cadastro
@@ -53,20 +50,24 @@ def cadastro():
 def cadastro_usuario():
     email = request.form['email']
     password = request.form['password']
+    if email == '' or password == '':
+        return render_template('cadastro.html', output="Email ou Senha em branco")
     
     cursor = db.cursor()
     verifica_email ='Select email from users where email = %s'
     cursor.execute(verifica_email, (email,))
     var = cursor.fetchone()
-    if var != "None":
-        return "Email ja cadastrado"
+
+    if var != None:
+        return render_template('cadastro.html', output="Ja tem cadastrado")
+    
     print(var)
     query = 'INSERT INTO users (password, email) VALUES (%s, %s)'
     cursor.execute(query, (password, email))
     db.commit()
     cursor.close()
 
-    return "Usuario cadastrado com sucesso"
+    return redirect(url_for('index'))
     
 if __name__ == '__main__':
     app.run(debug=True)
