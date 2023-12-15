@@ -10,7 +10,7 @@ db_name = 'zgsistemas'
 
 # Conectar ao banco de dados MySQL
 db = mysql.connector.connect(
-    host='192.168.28.11',
+    host='127.0.0.1',
     port=3307,
     user=db_username,
     password=db_password,
@@ -54,15 +54,19 @@ def cadastro_usuario():
     email = request.form['email']
     password = request.form['password']
     
-    print(email,password)
-
     cursor = db.cursor()
+    verifica_email ='Select email from users where email = %s'
+    cursor.execute(verifica_email, (email,))
+    var = cursor.fetchone()
+    if var != "None":
+        return "Email ja cadastrado"
+    print(var)
     query = 'INSERT INTO users (password, email) VALUES (%s, %s)'
     cursor.execute(query, (password, email))
     db.commit()
     cursor.close()
 
-    return "porque é obrigado"
+    return "Usuario cadastrado com sucesso"
     
 if __name__ == '__main__':
     app.run(debug=True)
