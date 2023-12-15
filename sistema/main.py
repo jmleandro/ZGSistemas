@@ -10,14 +10,14 @@ db_name = 'zgsistemas'
 
 # Conectar ao banco de dados MySQL
 db = mysql.connector.connect(
-    host='localhost',
+    host='192.168.28.11',
     port=3307,
     user=db_username,
     password=db_password,
     database=db_name
 )
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
@@ -30,6 +30,7 @@ def login():
     query = "SELECT * FROM users WHERE email = %s AND password = %s"
     cursor.execute(query, (email, password))
     user = cursor.fetchone()
+    cursor.close()
 
     if user:
         # Login bem-sucedido
@@ -38,25 +39,28 @@ def login():
         # Login falhou
         return "Credenciais inválidas. Tente novamente."
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET'])
 def dashboard():
     # Página de dashboard após o login bem-sucedido
     return "Você está logado! Esta é a página de dashboard."
 
 # cadastro
-@app.route('/cadastrar')
+@app.route('/cadastrar', methods=['GET'])
 def cadastro():
     return render_template('cadastro.html')
 
-@app.route('/cadastrousu')
+@app.route('/cadastrousu', methods=['POST'])
 def cadastro_usuario():
     email = request.form['email']
     password = request.form['password']
     
+    print(email,password)
+
     cursor = db.cursor()
-    query = "INSERT INTO users (password, email) VALUES (%s, %s)"
+    query = 'INSERT INTO users (password, email) VALUES (%s, %s)'
     cursor.execute(query, (password, email))
-    user = cursor.fetchone()
+    db.commit()
+    cursor.close()
 
     return "porque é obrigado"
     
