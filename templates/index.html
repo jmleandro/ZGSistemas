@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZG Sistema</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="pagina">
+        <div class="left_container">
+            <img src="/static/images/hive.svg" alt="Logo de comeia" class="logo">
+            <h1 class="lfet_titulo">
+                ZG Sistemas
+            </h1>
+        </div>
+        <form method="POST" action="/login" class="container">
+            <h1 class="titulo">
+                Login
+            </h1>
+            <p class="paragrafo">
+                Digite seus dados de acesso nos campos abaixo.
+            </p>
+            <label for="email" class="label-email">
+                E-mail
+            </label>
+            <input type="Email" class="email" placeholder="Digite seu e-mail" name="email">
+            <label for="senha" class="label-password">
+                Senha
+            </label>
+            <input type="password" class="password" placeholder="Digite sua senha " name="password">
+            <div class="cadastro">
+                <a href="/cadastrar" class="cadastre-se">Cadastre-se</a>
+                <a href="#" class="esqueci_minha_senha">Esqueci minha senha</a>
+            </div>
+            <button type="submit" class="botao">Acessar</button>
+            <p class="teste">{{ output }}</p>
+        </form>
+    </div>
+</body>
+</html>
