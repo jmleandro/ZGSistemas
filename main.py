@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for
 import mysql.connector
+import bcrypt
 
 app = Flask(__name__)
 
@@ -30,15 +31,20 @@ def login():
         return render_template("index.html", output="Email ou Senha em branco")
     
     cursor = db.cursor()
-    busca_credenciais = "SELECT * FROM users WHERE email = %s AND password = %s"
-    cursor.execute(busca_credenciais, (email, password))
+    busca_credenciais = "SELECT password FROM users WHERE email = %s"
+    cursor.execute(busca_credenciais, (email,))
     usuario = cursor.fetchone()
     cursor.close()
     
     if usuario != None:
-        return redirect(url_for("dashboard"))
+        hashed_password = usuario[0]
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):        
+            return redirect(url_for("dashboard"))
+        else:
+            return "Credenciais inválidas. Tente novamente."
     else:
         return "Credenciais inválidas. Tente novamente."
+    
 
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
@@ -56,6 +62,8 @@ def cadastro_usuario():
     if email == '' or password == '':
         return render_template("cadastro.html", output="Email ou Senha em branco")
     
+    senha_criptografada = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
     cursor = db.cursor()
     busca_email ="Select email from users where email = %s"
     cursor.execute(busca_email, (email,))
@@ -65,10 +73,11 @@ def cadastro_usuario():
         return render_template("cadastro.html", output="Email já cadastrado !")
     else:
         insere_usuario = "INSERT INTO users (password, email) VALUES (%s, %s)"
-        cursor.execute(insere_usuario, (password, email))
+        cursor.execute(insere_usuario, (senha_criptografada, email))
         cursor.close()
 
     return redirect(url_for("index"))
     
 if __name__ == "__main__":
     app.run(debug=True)
+    #app.run(host="0.0.0.0")
